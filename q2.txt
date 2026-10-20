@@ -1,0 +1,17 @@
+1. The screen corners are (200, 150) top-left, (600, 150) top-right, (600, 450) bottom-right, and
+   (200, 450) bottom-left; the diagonal runs from (600, 150) to (200, 450).
+   Top-left triangle, counterclockwise on screen: (200, 150), (200, 450), (600, 150).
+   Bottom-right triangle, counterclockwise on screen: (200, 450), (600, 450), (600, 150).
+
+2. As six separate vertices in (a), each vertex holds a position and a UV, which is 4 floats or 16
+   bytes, so 6 vertices are 96 bytes. With an index buffer we store only the 4 different corners,
+   4 x 16 = 64 bytes, plus the 6 indices at 4 bytes each, 24 bytes, which is 88 bytes, 8 bytes
+   less. Indexing wins when a shared vertex costs more than the indices that replace its duplicate:
+   with k uses of a vertex of V bytes it wins when V + k*I < k*V, so for our corners (used twice,
+   V = 16, I = 4) it is 16 + 8 < 32. If a vertex were used only once, indexing would add an index
+   and lose. Bigger vertices win more: with doubles a position and UV are 8 floats = 32 bytes, so
+   6 x 32 = 192 bytes against 4 x 32 + 24 = 152 bytes, a 40 byte saving.
+
+3. The rectangle spans x from 200 to 600 and y from 150 to 450, so
+   u = (500 - 200) / (600 - 200) = 0.75 and v = (301 - 150) / (450 - 150) = 151/300, about 0.503.
+   The UV coordinates are (0.75, 0.503).
